@@ -9,11 +9,15 @@
   import RightArrowIcon from "./icons/rightArrow.svelte";
   import LeftArrowIcon from "./icons/leftArrow.svelte";
   import type { PageData } from "../routes/$types";
+  let searchValue: string;
+  let timeout: NodeJS.Timeout;
+  let originalPageUsers;
   export let data: PageData;
   // TODO: Rename to allUsers
   let users;
   users = data.users;
-  userStore.set(data.users)
+  originalPageUsers = users;
+  userStore.set(data.users);
 
   userStore.subscribe((newState) => {
     if (newState.length === 0) {
@@ -29,7 +33,7 @@
       let response = await fetch(`http://127.0.0.1:8080/users?offset=${idx * offset}`);
       response = await response.json();
       // data = users;
-      users = response.users
+      users = response.users;
       userStore.set(users);
     } catch (error) {
       users = null;
@@ -43,6 +47,27 @@
   let pageArray = Array.from({ length: 5 }, (_, idx) => {
     return idx;
   });
+
+  async function searchUsers() {
+    // If user types again clear the timeout, but if the user does not type after 300ms then the setTimeout will not be cleared and then run
+    clearTimeout(timeout);
+
+    timeout = setTimeout(async () => {
+      console.log(searchValue);
+      if (searchValue) {
+        let result = await fetch(`http://127.0.0.1:8080/search?value=${searchValue}`);
+        if (result.ok) {
+          result = await result.json();
+          console.log(result);
+          userStore.set(result);
+          return;
+        }
+        return;
+      } else {
+        userStore.set(originalPageUsers)
+      }
+    }, 300);
+  }
 
   function generatePageArray(type: string) {
     pageArray = pageArray.map((num) => {
@@ -86,6 +111,8 @@
         class="px-4 h-10 rounded-md focus:outline-none text-gray-500 w-full"
         type="text"
         placeholder="Search"
+        bind:value={searchValue}
+        on:input={searchUsers}
         on:focus={() => {
           shadow = true;
         }}
