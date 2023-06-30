@@ -20,9 +20,9 @@
   userStore.set(data.users);
 
   userStore.subscribe((newState) => {
-    if (newState.length === 0) {
-      return;
-    }
+    // if (newState.length === 0) {
+    //   return;
+    // }
     users = newState;
   });
 
