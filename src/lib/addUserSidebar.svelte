@@ -12,14 +12,10 @@
   let email: HTMLInputElement;
   let notes: HTMLTextAreaElement;
   let password: HTMLInputElement;
-  let openAddUserState: boolean;
   let openAddUserHTML: HTMLElement;
   let display: boolean = false;
   let displayError: boolean = false;
   let errorMessage: string = "Could not add user";
-  openAddUser.subscribe((newState) => {
-    openAddUserState = newState;
-  });
 
   async function addUser() {
     const result: Response = await fetch("http://localhost:8080/user", {
@@ -67,12 +63,12 @@
   }
 
   function toggleAddUser() {
-    openAddUser.set(!openAddUserState);
+    openAddUser.set(!$openAddUser);
   }
   // export let openSideBar: boolean;
 
   function handler(event: MouseEvent) {
-    if (openAddUserState && !openAddUserHTML.contains(event.target as Node) && addUserButton && !addUserButton.contains(event.target as Node)) {
+    if ($openAddUser && !openAddUserHTML.contains(event.target as Node) && addUserButton && !addUserButton.contains(event.target as Node)) {
       console.log("clicked outside");
       openAddUser.set(false);
     }
@@ -96,22 +92,22 @@
 
 </script>
 
-<div class={`${openAddUserState ? "open" : "closed"} flex flex-col p-4 items-center h-[100vh] bg-base-100 fixed bottom-0 right-0 w-full md:w-[30rem] shadow-lg z-20`} bind:this={openAddUserHTML}>
+<div class={`${$openAddUser ? "open" : "closed"} flex flex-col p-4 items-center h-[100vh] bg-base-100 fixed bottom-0 right-0 w-full md:w-[30rem] shadow-lg z-20`} bind:this={openAddUserHTML}>
   <button
     class="ml-auto p-1 ease-in transition-all hover:bg-base-200 rounded-lg cursor-pointer outline-2 outline-transparent focus:outline-base-300"
     on:click={toggleAddUser}
-    tabindex={openAddUserState ? 1 : -1}
+    tabindex={$openAddUser ? 1 : -1}
   >
     <CloseIcon />
   </button>
   <h1 class="prose-xl">Add User 👤</h1>
   <p class="mb-5 text-gray-400 select-none text-xs">* ID will be auto generated</p>
   <div class="flex w-full gap-3">
-    <input type="text" class="input input-bordered w-full select-none" placeholder="First Name" bind:this={firstName} tabindex={openAddUserState ? 1 : -1} />
-    <input type="text" class="input input-bordered w-full select-none" placeholder="Last Name" bind:this={lastName} tabindex={openAddUserState ? 1 : -1} />
+    <input type="text" class="input input-bordered w-full select-none" placeholder="First Name" bind:this={firstName} tabindex={$openAddUser ? 1 : -1} />
+    <input type="text" class="input input-bordered w-full select-none" placeholder="Last Name" bind:this={lastName} tabindex={$openAddUser ? 1 : -1} />
   </div>
   <div class="w-full">
-    <input type="text" class="input input-bordered w-full mt-5 select-none" placeholder="Email ✉️" bind:this={email} tabindex={openAddUserState ? 1 : -1} />
+    <input type="text" class="input input-bordered w-full mt-5 select-none" placeholder="Email ✉️" bind:this={email} tabindex={$openAddUser ? 1 : -1} />
   </div>
   <div class="relative w-full">
     <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -127,13 +123,13 @@
         <EyeIcon width="25px" fill="#9ca3af" />
       {/if}
     </div>
-    <input type={eyeStatus ? "password" : "text"} class="input input-bordered w-full mt-5 select-none" placeholder="Password 🔒" bind:this={password} tabindex={openAddUserState ? 1 : -1} />
+    <input type={eyeStatus ? "password" : "text"} class="input input-bordered w-full mt-5 select-none" placeholder="Password 🔒" bind:this={password} tabindex={$openAddUser ? 1 : -1} />
     <div class="flex">
-      <button class="btn btn-xs font-normal normal-case rounded-lg mt-2 ml-auto" on:click={generatePassword} tabindex={openAddUserState ? 1 : -1}>Generate</button>
+      <button class="btn btn-xs font-normal normal-case rounded-lg mt-2 ml-auto" on:click={generatePassword} tabindex={$openAddUser ? 1 : -1}>Generate</button>
     </div>
   </div>
-  <textarea class="textarea textarea-bordered w-full mt-5 select-none" name="" id="" cols="30" rows="5" placeholder="Notes 📝" bind:this={notes} tabindex={openAddUserState ? 1 : -1} />
-  <button class="btn w-full mt-5 hover:bg-[#51cf94] hover:shadow-lg hover:text-white" on:click={addUser} tabindex={openAddUserState ? 1 : -1}>Add User ➕</button>
+  <textarea class="textarea textarea-bordered w-full mt-5 select-none" name="" id="" cols="30" rows="5" placeholder="Notes 📝" bind:this={notes} tabindex={$openAddUser ? 1 : -1} />
+  <button class="btn w-full mt-5 hover:bg-[#51cf94] hover:shadow-lg hover:text-white" on:click={addUser} tabindex={$openAddUser ? 1 : -1}>Add User ➕</button>
 </div>
 <Alert type="alert-success" text={"User Added"} bind:display />
 <Alert type="alert-error" text={errorMessage} bind:displayError />

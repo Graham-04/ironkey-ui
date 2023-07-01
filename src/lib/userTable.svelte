@@ -1,7 +1,7 @@
 <script lang="ts">
   import JsonModal from "./jsonModal.svelte";
   import UserRow from "./userRow.svelte";
-  import { openAddUser, userStore } from "../stores";
+  import { openAddUser, selectedUserIds, userStore } from "../stores";
   import MoreIcon from "./icons/more.svelte";
   import SearchIcon from "./icons/search.svelte";
   import UserIcon from "./icons/user.svelte";
@@ -12,6 +12,9 @@
   let searchValue: string;
   let timeout: NodeJS.Timeout;
   let originalPageUsers;
+  let selectedUsersPage;
+  let selected: boolean = false;
+
   export let data: PageData;
   // TODO: Rename to allUsers
   let users;
@@ -19,16 +22,14 @@
   originalPageUsers = users;
   userStore.set(data.users);
 
-  userStore.subscribe((newState) => {
-    // if (newState.length === 0) {
-    //   return;
-    // }
-    users = newState;
-  });
-
   let offset = 10;
   let pageSize = 4;
   const switchPage = async (idx: number) => {
+    if (selectedUsersPage !== currentPage) {
+      selected = false;
+    } else {
+      selected = true;
+    }
     try {
       let response = await fetch(`http://127.0.0.1:8080/users?offset=${idx * offset}`);
       response = await response.json();
@@ -64,7 +65,7 @@
         }
         return;
       } else {
-        userStore.set(originalPageUsers)
+        userStore.set(originalPageUsers);
       }
     }, 300);
   }
@@ -81,21 +82,33 @@
     });
   }
 
+  function selectAllUsersOnPage() {
+    if (selected) {
+      selectedUserIds.set([]);
+      selected = !selected;
+      selectedUsersPage = null;
+      return;
+    }
+
+    console.log($userStore);
+    let ids = $userStore.map((user) => user.id);
+    selectedUserIds.set(ids);
+    selected = !selected;
+    selectedUsersPage = currentPage;
+    return;
+  }
+
   let shadow = false;
-  let openAddUserState: boolean;
+  // let openAddUserState: boolean;
   let checked: boolean = false;
   // let iconFill = "#000"
   //on:mouseover={() => {iconFill = "#FFF"}} on:mouseleave={() => {iconFill = "#000"}}
   export let addUserButton: HTMLElement;
-  openAddUser.subscribe((newState) => {
-    console.log("new state", newState);
-    openAddUserState = newState;
-  });
 </script>
 
 <div class="flex flex-col justify-center items-center">
   <div class="flex w-full items-center">
-    <button class="btn hover:shadow-lg" on:click={() => openAddUser.set(!openAddUserState)} bind:this={addUserButton}>
+    <button class="btn hover:shadow-lg" on:click={() => openAddUser.set(!$openAddUser)} bind:this={addUserButton}>
       <UserIcon />
       Add User
     </button>
@@ -128,7 +141,7 @@
     <thead class="">
       <tr class="border-b-[1px]">
         <th class="text-left align-middle py-2">
-          <input type="checkbox" class="checkbox align-middle" on:click={() => (checked = !checked)} {checked} />
+          <input type="checkbox" class="checkbox align-middle" on:click={selectAllUsersOnPage} bind:checked={selected} />
         </th>
         <th class="text-left text-sm text-gray-500">First Name</th>
         <th class="text-left text-sm text-gray-500">Last Name</th>
@@ -137,7 +150,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each users as user}
+      {#each $userStore as user}
         <UserRow bind:checked firstName={user.firstName} lastName={user.lastName} userId={user.id} email={user.email} notes={user.notes} />
       {/each}
     </tbody>

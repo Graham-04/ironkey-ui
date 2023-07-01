@@ -3,9 +3,7 @@
   import { openEditUser, currentUserData, userStore } from "../stores";
   import { onMount } from "svelte";
   import Alert from "./alert.svelte";
-  let openEditUserState: boolean;
   let editUserHTML: HTMLElement;
-  let userData;
   let firstName: HTMLInputElement;
   let lastName: HTMLInputElement;
   let email: HTMLInputElement;
@@ -13,24 +11,10 @@
   let displaySuccess: boolean = false;
   let displayError: boolean = false;
   let errorMessage: string = "Could not update user";
-  let allUsers;
-
-  userStore.subscribe((newState) => {
-    console.log("new state in editusersidebar: ");
-    allUsers = newState;
-  });
-
-  currentUserData.subscribe((newState) => {
-    userData = newState;
-  });
-
-  openEditUser.subscribe((newState) => {
-    openEditUserState = newState;
-  });
 
   async function updateUser() {
     const newUserData = {
-      id: userData.id,
+      id: $currentUserData.id,
       firstName: firstName.value,
       lastName: lastName.value,
       email: email.value,
@@ -45,9 +29,9 @@
       if (result.ok) {
         displaySuccess = true;
         openEditUser.set(false);
-        console.log("userStore:", allUsers);
-        let editedUser = allUsers.find((user) => {
-          if (user.id === userData.id) {
+        console.log("userStore:", $userStore);
+        let editedUser = $userStore.find((user) => {
+          if (user.id === $userStore.id) {
             console.log("the edited user is: , ", user);
             return true;
           }
@@ -60,7 +44,7 @@
           editedUser.lastName = lastName.value;
         }
 
-        userStore.set(allUsers);
+        userStore.set($userStore);
 
         return;
       } else {
@@ -73,11 +57,11 @@
   }
 
   function toggleEditUser() {
-    openEditUser.set(!openEditUserState);
+    openEditUser.set(!$openEditUser);
   }
 
   function handler(event: MouseEvent) {
-    if (openEditUserState && !editUserHTML.contains(event.target as Node)) {
+    if ($openEditUser && !editUserHTML.contains(event.target as Node)) {
       console.log("clicked outside");
       openEditUser.set(false);
     }
@@ -100,24 +84,24 @@
   });
 </script>
 
-<div class={`${openEditUserState ? "open" : "closed"} flex flex-col p-4 items-center h-[100vh] bg-base-100 fixed bottom-0 right-0 w-full md:w-[30rem] shadow-lg z-20`} bind:this={editUserHTML}>
+<div class={`${$openEditUser ? "open" : "closed"} flex flex-col p-4 items-center h-[100vh] bg-base-100 fixed bottom-0 right-0 w-full md:w-[30rem] shadow-lg z-20`} bind:this={editUserHTML}>
   <button
     class="ml-auto p-1 ease-in transition-all hover:bg-base-200 rounded-lg cursor-pointer outline-2 outline-transparent focus:outline-base-300"
     on:click={toggleEditUser}
-    tabindex={openEditUserState ? 1 : -1}
+    tabindex={$openEditUser ? 1 : -1}
   >
     <CloseIcon />
   </button>
   <h1 class="prose-xl mb-5">Edit User ⚠️</h1>
   <div class="flex w-full gap-3">
-    <input type="text" class="input input-bordered w-full" placeholder="First Name" value={userData.firstName} tabindex={openEditUserState ? 1 : -1} bind:this={firstName} />
-    <input type="text" class="input input-bordered w-full" placeholder="Last Name" value={userData.lastName} tabindex={openEditUserState ? 1 : -1} bind:this={lastName} />
+    <input type="text" class="input input-bordered w-full" placeholder="First Name" value={$currentUserData.firstName} tabindex={$openEditUser ? 1 : -1} bind:this={firstName} />
+    <input type="text" class="input input-bordered w-full" placeholder="Last Name" value={$currentUserData.lastName} tabindex={$openEditUser ? 1 : -1} bind:this={lastName} />
   </div>
   <div class="w-full">
-    <input type="text" class="input input-bordered w-full mt-5" placeholder="Email ✉️" value={userData.email} tabindex={openEditUserState ? 1 : -1} bind:this={email} />
+    <input type="text" class="input input-bordered w-full mt-5" placeholder="Email ✉️" value={$currentUserData.email} tabindex={$openEditUser ? 1 : -1} bind:this={email} />
   </div>
-  <textarea class="textarea textarea-bordered w-full mt-5" name="" id="" cols="30" rows="5" value={userData.notes} placeholder="Notes 📝" tabindex={openEditUserState ? 1 : -1} bind:this={notes} />
-  <button class="btn w-full mt-3 hover:bg-[#ffd43b] hover:shadow-sm border-0" tabindex={openEditUserState ? 1 : -1} on:click={updateUser}>Update</button>
+  <textarea class="textarea textarea-bordered w-full mt-5" name="" id="" cols="30" rows="5" value={$currentUserData.notes} placeholder="Notes 📝" tabindex={$openEditUser ? 1 : -1} bind:this={notes} />
+  <button class="btn w-full mt-3 hover:bg-[#ffd43b] hover:shadow-sm border-0" tabindex={$openEditUser ? 1 : -1} on:click={updateUser}>Update</button>
   <p class="text-red-600 text-sm mt-1.5 {displayError ? "block" : "hidden"}">Error updating user</p>
 </div>
 <Alert type="alert-success" text="Updated User" bind:display={displaySuccess} />

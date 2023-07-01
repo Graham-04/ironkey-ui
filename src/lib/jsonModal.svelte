@@ -3,7 +3,7 @@
   import CopyIcon from "./icons/copy.svelte";
   import { openModal, currentUserData } from "../stores";
   let modalInside: HTMLElement;
-  let openModalState: boolean = true;
+  // let openModalState: boolean = true;
   let userData: string;
   let copyText: boolean = false;
   function wrapJSON(json: object) {
@@ -35,18 +35,15 @@
     userData = wrapJSON(newState);
     // userData = newState;
   });
-  openModal.subscribe((newState) => {
-    // console.log("new state", newState);
-    openModalState = newState;
-  });
+
   let json: HTMLElement;
   function handler(event: MouseEvent) {
-    if (openModalState && !modalInside.contains(event.target as Node)) {
+    if ($openModal && !modalInside.contains(event.target as Node)) {
       openModal.set(false);
     }
   }
   function handleKeyDown(event: KeyboardEvent) {
-    if ((openModalState && event.key === "Tab") || event.key === "Escape") {
+    if (($openModal && event.key === "Tab") || event.key === "Escape") {
       event.preventDefault();
       openModal.set(false);
     }
@@ -67,7 +64,7 @@
   });
 </script>
 
-{#if openModalState}
+{#if $openModal}
   <div class="fixed left-0 top-0 w-[100%] h-[100%] bg-[#000000bf] flex items-center justify-center cursor-pointer z-20">
     <div class="bg-white rounded-lg w-[95%] h-auto max-h-80 p-4 cursor-default w-auto" bind:this={modalInside}>
       <div class="bg-[#282C34] p-3 rounded-lg relative flex flex-col max-h-full">
