@@ -9,11 +9,13 @@
   import RightArrowIcon from "./icons/rightArrow.svelte";
   import LeftArrowIcon from "./icons/leftArrow.svelte";
   import type { PageData } from "../routes/$types";
+  import { onMount } from "svelte";
   let searchValue: string;
   let timeout: NodeJS.Timeout;
   let originalPageUsers;
   let selectedUsersPage;
   let selected: boolean = false;
+  let searchFocus: boolean = false;
 
   export let data: PageData;
   // TODO: Rename to allUsers
@@ -47,6 +49,27 @@
   let currentPage = 0;
   let pageArray = Array.from({ length: 5 }, (_, idx) => {
     return idx;
+  });
+
+  async function searchHandler(event: KeyboardEvent) {
+    if (event.key === "Enter" && searchFocus) {
+      if (searchValue) {
+        let result = await fetch(`http://127.0.0.1:8080/search?value=${searchValue}`);
+        if (result.ok) {
+          result = await result.json();
+          console.log(result);
+          userStore.set(result);
+          return;
+        }
+        return;
+      } else {
+        userStore.set(originalPageUsers);
+      }
+    }
+  }
+
+  onMount(() => {
+    document.addEventListener("keydown", searchHandler);
   });
 
   async function searchUsers() {
@@ -128,9 +151,11 @@
         on:input={searchUsers}
         on:focus={() => {
           shadow = true;
+          searchFocus = true;
         }}
         on:focusout={() => {
           shadow = false;
+          searchFocus = false;
         }}
       />
     </div>
