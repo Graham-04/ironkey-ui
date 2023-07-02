@@ -5,14 +5,39 @@
   import JsonModal from "./jsonModal.svelte";
   import { openModal, openEditUser, currentUserData, selectedUserIds, userStore } from "../stores";
   import { onMount } from "svelte";
+  import Alert from "./alert.svelte";
   export let firstName: string | undefined = undefined;
   export let lastName: string | undefined = undefined;
   export let email: string | undefined = undefined;
   export let userId: string | undefined = undefined;
   export let notes: string | undefined = undefined;
   let copyText = false;
+  let allowOpen = true;
+  let displayError = false;
+  let display = false;
 
   export let checked: boolean;
+
+  async function deleteUser() {
+    let result = await fetch(`http://127.0.0.1:8080/user?id=${userId}`, {
+      method: "DELETE",
+    });
+
+    if (result.ok) {
+      console.log("Deleted user", userId);
+      let removed = $userStore.filter((user) => {
+        return user.id !== userId;
+      });
+      allowOpen = false;
+      console.log(removed);
+      userStore.set(removed);
+      display = true;
+      return;
+    }
+
+    console.error("Could not delete user", userId);
+    displayError = true;
+  }
 
   function addSelectedUser(id: string) {
     if ($selectedUserIds.includes(id)) {
@@ -103,30 +128,44 @@
   <td class="align-middle">
     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
     <div class="flex">
-      <div class="hover:bg-base-300 p-1 rounded-lg cursor-pointer dropdown {screenWidth < 1500 ? 'dropdown-end' : ''} ml-auto" tabindex="0">
+      <button
+        class="hover:bg-base-300 p-1 rounded-lg cursor-pointer dropdown {screenWidth < 1500 ? 'dropdown-end' : ''} ml-auto"
+        tabindex="0"
+        on:click={() => {
+          allowOpen = true;
+        }}
+      >
         <MoreIcon />
         {#if !($openModal || $openEditUser)}
-          <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-          <ul tabindex="0" class="dropdown-content menu shadow bg-base-100 rounded-box w-52 z-10 mt-3">
-            <li><button on:click={toggleEditUser}>Edit</button></li>
-            <li>
-              <button on:click={openJsonModal}>
-                <BracketsIcon width={"18px"} height={"18px"} strokeWidth={"2"} />
-                View JSON
-              </button>
-            </li>
-            <li class="focus:bg-blue-200">
-              <button class="no_focus">
-                <TrashIcon width={"18px"} height={"18px"} strokeWidth={"2"} fill={"#F87272"} />
-                <p class="text-error">Delete</p>
-              </button>
-            </li>
-          </ul>
+          {#if allowOpen}
+            <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+            <ul tabindex="0" class="dropdown-content menu shadow bg-base-100 rounded-box w-52 z-10 mt-3">
+              <li><button on:click={toggleEditUser}>Edit User</button></li>
+              <li>
+                <button on:click={openJsonModal}>
+                  <BracketsIcon width={"18px"} height={"18px"} strokeWidth={"2"} />
+                  View JSON
+                </button>
+              </li>
+              <!-- svelte-ignore a11y-click-events-have-key-events -->
+              <li on:click={deleteUser}>
+                <button class="no_focus">
+                  <TrashIcon width={"18px"} height={"18px"} strokeWidth={"2"} fill={"#F87272"} />
+                  <p class="text-error">Delete</p>
+                </button>
+              </li>
+            </ul>
+          {/if}
         {/if}
-      </div>
+      </button>
     </div>
   </td>
 </tr>
+
+<div class="flex justify-center fixed top-0 mx-auto right-[50%]">
+  <Alert text="Could not delete user" bind:displayError type="alert-error" />
+  <Alert text="Deleted User" bind:display type="alert-success" />
+</div>
 
 <style>
   td {
