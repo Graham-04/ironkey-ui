@@ -25,7 +25,7 @@
   }
 </script>
 
-<!-- TODO: Remove displayError -->
+<!-- TODO: Remove displayError & refactor `display` to `displaySuccess` -->
 <!-- {#if display} -->
   <div class="flex justify-center">
     <!-- <div class="alert duration-500 transition-all absolute ease-in mt-3 w-80 {top} {opacity} {type}"> -->

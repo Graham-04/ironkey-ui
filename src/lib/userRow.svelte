@@ -3,6 +3,7 @@
   import TrashIcon from "$lib/icons/trash.svelte";
   import BracketsIcon from "./icons/brackets.svelte";
   import JsonModal from "./jsonModal.svelte";
+  import { deleteUser } from "../services/deleteUser";
   import { openModal, openEditUser, currentUserData, selectedUserIds, userStore } from "../stores";
   import { onMount } from "svelte";
   import Alert from "./alert.svelte";
@@ -18,13 +19,11 @@
 
   export let checked: boolean;
 
-  async function deleteUser() {
-    let result = await fetch(`http://127.0.0.1:8080/user?id=${userId}`, {
-      method: "DELETE",
-    });
+  async function deleteUserRow() {
+    let result = deleteUser({user: userId});
 
-    if (result.ok) {
-      console.log("Deleted user", userId);
+
+    if (result) {
       let removed = $userStore.filter((user) => {
         return user.id !== userId;
       });
@@ -35,7 +34,6 @@
       return;
     }
 
-    console.error("Could not delete user", userId);
     displayError = true;
   }
 
@@ -45,7 +43,6 @@
         return id !== userId;
       });
 
-      console.log("removed is", removed);
 
       selectedUserIds.set(removed);
       return;
@@ -148,7 +145,7 @@
                 </button>
               </li>
               <!-- svelte-ignore a11y-click-events-have-key-events -->
-              <li on:click={deleteUser}>
+              <li on:click={deleteUserRow}>
                 <button class="no_focus">
                   <TrashIcon width={"18px"} height={"18px"} strokeWidth={"2"} fill={"#F87272"} />
                   <p class="text-error">Delete</p>

@@ -10,10 +10,12 @@
   import LeftArrowIcon from "./icons/leftArrow.svelte";
   import type { PageData } from "../routes/$types";
   import { onMount } from "svelte";
+  import TrashIcon from "./icons/trash.svelte";
+  import { deleteUser } from "../services/deleteUser";
   let searchValue: string;
   let timeout: NodeJS.Timeout;
-  let originalPageUsers;
-  let selectedUsersPage;
+  let originalPageUsers: number;
+  let selectedUsersPage: number;
   let selected: boolean = false;
   let searchFocus: boolean = false;
 
@@ -26,7 +28,23 @@
 
   let offset = 10;
   let pageSize = 4;
-  const switchPage = async (idx: number) => {
+
+  async function deleteUsers() {
+    // let result = await deleteUser()
+    let result = await deleteUser({users: $selectedUserIds });
+    console.log(result)
+    // remove ids that were in selecteduserIds
+    let removed = $userStore.filter((user) => {
+      if ($selectedUserIds.includes(user.id)) {
+        return false
+      } else {
+        return true
+      }
+    }) 
+    userStore.set(removed)
+  }
+
+  async function switchPage(idx: number) {
     if (selectedUsersPage !== currentPage) {
       selected = false;
     } else {
@@ -45,7 +63,6 @@
   };
 
   const totalPages = Math.ceil(data.total / 10);
-  console.log("totalPages: ", totalPages);
   let currentPage = 0;
   let pageArray = Array.from({ length: 5 }, (_, idx) => {
     return idx;
@@ -57,7 +74,6 @@
         let result = await fetch(`http://127.0.0.1:8080/search?value=${searchValue}`);
         if (result.ok) {
           result = await result.json();
-          console.log(result);
           userStore.set(result);
           return;
         }
@@ -77,7 +93,6 @@
     clearTimeout(timeout);
 
     timeout = setTimeout(async () => {
-      console.log(searchValue);
       if (searchValue) {
         let result = await fetch(`http://127.0.0.1:8080/search?value=${searchValue}`);
         if (result.ok) {
@@ -131,9 +146,12 @@
 
 <div class="flex flex-col justify-center items-center">
   <div class="flex w-full items-center">
-    <button class="btn hover:shadow-lg" on:click={() => openAddUser.set(!$openAddUser)} bind:this={addUserButton}>
+    <button class="btn hover:shadow-md" on:click={() => openAddUser.set(!$openAddUser)} bind:this={addUserButton}>
       <UserIcon />
       Add User
+    </button>
+    <button class="btn hover:shadow-md ml-2 text-[#F87272]" on:click={deleteUsers}>
+      <TrashIcon fill="#F87272" />
     </button>
     <div
       class="flex items-center border border-[1.5px] border-gray-200 p-1 rounded-xl w-[80%] md:w-[19rem] lg:w-[23rem] ml-auto {shadow
