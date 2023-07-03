@@ -24,7 +24,7 @@ export const deleteUser = async ({ userId = undefined, users = undefined }: { us
     if (!result) {
       console.error("Could not delete user: ", id);
     }
-    return truew;
+    return true;
   } else {
     return false;
   }
