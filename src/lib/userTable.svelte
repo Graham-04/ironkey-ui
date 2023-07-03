@@ -36,11 +36,14 @@
     // remove ids that were in selecteduserIds
     let removed = $userStore.filter((user) => {
       if ($selectedUserIds.includes(user.id)) {
+        console.log(user.id)
         return false
       } else {
         return true
       }
     }) 
+
+    selectedUserIds.set([])
     userStore.set(removed)
   }
 

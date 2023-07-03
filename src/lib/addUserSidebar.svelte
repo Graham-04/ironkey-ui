@@ -2,6 +2,7 @@
   import CloseIcon from "./icons/close.svelte";
   import { openAddUser } from "../stores";
   import { onMount } from "svelte";
+  import { userStore } from "../stores";
   import EyeIcon from "./icons/eye.svelte";
   import Alert from "$lib/alert.svelte";
   import ClosedEyeIcon from "./icons/closedEye.svelte";
@@ -32,6 +33,14 @@
     // display = true
     if (result.ok) {
       // Display user added
+      const json = await result.json();
+      console.log(json);
+      // let added = $userStore.unshift(json);
+      // console.log("added:", added);
+      console.log("userStore:", $userStore);
+      $userStore.unshift(json)
+      userStore.set($userStore)
+      console.log("final: ", $userStore);
       display = true;
       firstName.value = "";
       lastName.value = "";
@@ -89,7 +98,6 @@
       document.removeEventListener("keydown", handleKeyDown);
     };
   });
-
 </script>
 
 <div class={`${$openAddUser ? "open" : "closed"} flex flex-col p-4 items-center h-[100vh] bg-base-100 fixed bottom-0 right-0 w-full md:w-[30rem] shadow-lg z-20`} bind:this={openAddUserHTML}>
