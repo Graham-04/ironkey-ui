@@ -1,6 +1,6 @@
 <script lang="ts">
   import CloseIcon from "./icons/close.svelte";
-  import { openAddUser } from "../stores";
+  import { openAddUser, totalUsers } from "../stores";
   import { onMount } from "svelte";
   import { userStore } from "../stores";
   import EyeIcon from "./icons/eye.svelte";
@@ -48,6 +48,7 @@
       email.value = "";
       notes.value = "";
       openAddUser.set(false);
+      totalUsers.set($totalUsers + 1)
       return;
     } else if (result.status === 409) {
       errorMessage = "Duplicate Email";
