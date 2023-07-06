@@ -21,7 +21,6 @@
       notes: notes.value || null,
     };
     try {
-      console.log(newUserData);
       let result = await fetch("http://127.0.0.1:8080/user", {
         method: "PATCH",
         body: JSON.stringify(newUserData),
@@ -29,16 +28,13 @@
       if (result.ok) {
         displaySuccess = true;
         openEditUser.set(false);
-        console.log("userStore:", $userStore);
         let editedUser = $userStore.find((user) => {
           if (user.id === $userStore.id) {
-            console.log("the edited user is: , ", user);
             return true;
           }
         });
 
         if (editedUser) {
-          console.log("updating editedUser");
           editedUser.email = email.value;
           editedUser.firstName = firstName.value;
           editedUser.lastName = lastName.value;

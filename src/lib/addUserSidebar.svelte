@@ -34,13 +34,9 @@
     if (result.ok) {
       // Display user added
       const json = await result.json();
-      console.log(json);
       // let added = $userStore.unshift(json);
-      // console.log("added:", added);
-      console.log("userStore:", $userStore);
       $userStore.unshift(json)
       userStore.set($userStore)
-      console.log("final: ", $userStore);
       display = true;
       firstName.value = "";
       lastName.value = "";
@@ -78,7 +74,6 @@
 
   function handler(event: MouseEvent) {
     if ($openAddUser && !openAddUserHTML.contains(event.target as Node) && addUserButton && !addUserButton.contains(event.target as Node)) {
-      console.log("clicked outside");
       openAddUser.set(false);
     }
   }

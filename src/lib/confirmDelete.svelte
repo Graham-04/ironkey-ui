@@ -2,8 +2,11 @@
   import { openDeleteModal, selectedUserIds, userStore } from "../stores";
   import { onMount } from "svelte";
   import { deleteUser } from "../services/deleteUser";
+  import Alert from "./alert.svelte";
 
   let modalInside: HTMLElement;
+  let displayError: boolean = false;
+  let display: boolean = false;
 
   function handler(event: MouseEvent) {
     if ($openDeleteModal && !modalInside.contains(event.target as Node)) {
@@ -21,11 +24,14 @@
   async function deleteUsers() {
     // let result = await deleteUser()
     let result = await deleteUser({ users: $selectedUserIds });
-    console.log(result);
+    if (!result) {
+      displayError = true;
+      openDeleteModal.set(false);
+      return;
+    }
     // remove ids that were in selecteduserIds
     let removed = $userStore.filter((user) => {
       if ($selectedUserIds.includes(user.id)) {
-        console.log(user.id);
         return false;
       } else {
         return true;
@@ -34,7 +40,8 @@
 
     selectedUserIds.set([]);
     userStore.set(removed);
-		openDeleteModal.set(false)
+    openDeleteModal.set(false);
+    display = true;
   }
 
   onMount(() => {
@@ -69,6 +76,8 @@
     </div>
   </div>
 {/if}
+<Alert type="alert-error" text="Could not delete user" bind:displayError={displayError} />
+<Alert type="alert-success" text="Successfully deleted" bind:display={display} />
 
 <style>
   /* ===== Scrollbar CSS ===== */

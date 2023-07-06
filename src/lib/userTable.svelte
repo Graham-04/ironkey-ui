@@ -107,7 +107,6 @@
         let result = await fetch(`http://127.0.0.1:8080/search?value=${searchValue}`);
         if (result.ok) {
           result = await result.json();
-          console.log(result);
           userStore.set(result);
           return;
         }
@@ -138,7 +137,6 @@
       return;
     }
 
-    console.log($userStore);
     let ids = $userStore.map((user) => user.id);
     selectedUserIds.set(ids);
     selected = !selected;

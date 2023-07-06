@@ -4,7 +4,6 @@ export const load = async () => {
       method: "GET",
     });
     users = await users.json();
-    console.log(users);
     return users;
   } catch {
     return {

@@ -28,7 +28,6 @@
         return user.id !== userId;
       });
       allowOpen = false;
-      console.log(removed);
       userStore.set(removed);
       display = true;
       return;
@@ -50,7 +49,6 @@
     selectedUserIds.update((ids) => {
       return [...ids, id];
     });
-    console.log($selectedUserIds);
   }
 
   function openJsonModal() {
