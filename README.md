@@ -21,6 +21,7 @@ https://ironkey-dev.gitbook.io/docs/reference/
 ![image](/readme_img/main.png)
 ![image](/readme_img/addUser.png)
 ![image](/readme_img/jsonModal.png)
+![image](/readme_img/delete.png)
 ![image](/readme_img/dropdown.png)
 
 ### Running
