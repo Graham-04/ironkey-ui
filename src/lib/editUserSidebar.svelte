@@ -29,17 +29,21 @@
         displaySuccess = true;
         openEditUser.set(false);
         let editedUser = $userStore.find((user) => {
-          if (user.id === $userStore.id) {
+          console.log($currentUserData.id, user.id);
+          if ($currentUserData.id === user.id) {
             return true;
           }
         });
 
         if (editedUser) {
+          // Update the found user with new data
           editedUser.email = email.value;
           editedUser.firstName = firstName.value;
           editedUser.lastName = lastName.value;
+          editedUser.notes = notes.value;
         }
 
+        // Update userStore with the new data
         userStore.set($userStore);
 
         return;
@@ -98,7 +102,7 @@
   </div>
   <textarea class="textarea textarea-bordered w-full mt-5" name="" id="" cols="30" rows="5" value={$currentUserData.notes} placeholder="Notes 📝" tabindex={$openEditUser ? 1 : -1} bind:this={notes} />
   <button class="btn w-full mt-3 hover:bg-[#ffd43b] hover:shadow-sm border-0" tabindex={$openEditUser ? 1 : -1} on:click={updateUser}>Update</button>
-  <p class="text-red-600 text-sm mt-1.5 {displayError ? "block" : "hidden"}">Error updating user</p>
+  <p class="text-red-600 text-sm mt-1.5 {displayError ? 'block' : 'hidden'}">Error updating user</p>
 </div>
 <Alert type="alert-success" text="Updated User" bind:display={displaySuccess} />
 <Alert type="alert-error" text={errorMessage} bind:displayError />
