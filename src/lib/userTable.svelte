@@ -1,7 +1,7 @@
 <script lang="ts">
   import JsonModal from "./jsonModal.svelte";
   import UserRow from "./userRow.svelte";
-  import { openAddUser, selectedUserIds, userStore } from "../stores";
+  import { openAddUser, openDeleteModal, selectedUserIds, userStore } from "../stores";
   import MoreIcon from "./icons/more.svelte";
   import SearchIcon from "./icons/search.svelte";
   import UserIcon from "./icons/user.svelte";
@@ -12,6 +12,7 @@
   import { onMount } from "svelte";
   import TrashIcon from "./icons/trash.svelte";
   import { deleteUser } from "../services/deleteUser";
+  import ConfirmDelete from "./confirmDelete.svelte";
   let searchValue: string;
   let timeout: NodeJS.Timeout;
   let originalPageUsers: number;
@@ -30,21 +31,25 @@
   let pageSize = 4;
 
   async function deleteUsers() {
-    // let result = await deleteUser()
-    let result = await deleteUser({users: $selectedUserIds });
-    console.log(result)
-    // remove ids that were in selecteduserIds
-    let removed = $userStore.filter((user) => {
-      if ($selectedUserIds.includes(user.id)) {
-        console.log(user.id)
-        return false
-      } else {
-        return true
-      }
-    }) 
+    openDeleteModal.set(true);
 
-    selectedUserIds.set([])
-    userStore.set(removed)
+    // If not using delete modal then use: 
+    
+    // // let result = await deleteUser()
+    // let result = await deleteUser({users: $selectedUserIds });
+    // console.log(result)
+    // // remove ids that were in selecteduserIds
+    // let removed = $userStore.filter((user) => {
+    //   if ($selectedUserIds.includes(user.id)) {
+    //     console.log(user.id)
+    //     return false
+    //   } else {
+    //     return true
+    //   }
+    // })
+
+    // selectedUserIds.set([])
+    // userStore.set(removed)
   }
 
   async function switchPage(idx: number) {
@@ -63,7 +68,7 @@
       users = null;
       console.error(error);
     }
-  };
+  }
 
   const totalPages = Math.ceil(data.total / 10);
   let currentPage = 0;
@@ -147,6 +152,7 @@
   export let addUserButton: HTMLElement;
 </script>
 
+<ConfirmDelete />
 <div class="flex flex-col justify-center items-center">
   <div class="flex w-full items-center">
     <button class="btn hover:shadow-md" on:click={() => openAddUser.set(!$openAddUser)} bind:this={addUserButton}>

@@ -6,3 +6,4 @@ export const currentUserData = writable({});
 // current users for the current page
 export const userStore = writable([]);
 export const selectedUserIds = writable([]);
+export const openDeleteModal = writable(false);
