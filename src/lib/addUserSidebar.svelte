@@ -35,8 +35,12 @@
       // Display user added
       const json = await result.json();
       // let added = $userStore.unshift(json);
-      $userStore.unshift(json)
-      userStore.set($userStore)
+      if ($userStore.length >= 1) {
+        $userStore.unshift(json);
+      } else {
+        $userStore.push(json  )
+      }
+      userStore.set($userStore);
       display = true;
       firstName.value = "";
       lastName.value = "";

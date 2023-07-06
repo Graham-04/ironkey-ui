@@ -7,3 +7,4 @@ export const currentUserData = writable({});
 export const userStore = writable([]);
 export const selectedUserIds = writable([]);
 export const openDeleteModal = writable(false);
+export const totalUsers = writable(0);

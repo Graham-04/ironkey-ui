@@ -1,7 +1,7 @@
 <script lang="ts">
   import JsonModal from "./jsonModal.svelte";
   import UserRow from "./userRow.svelte";
-  import { openAddUser, openDeleteModal, selectedUserIds, userStore } from "../stores";
+  import { openAddUser, openDeleteModal, selectedUserIds, userStore, totalUsers } from "../stores";
   import MoreIcon from "./icons/more.svelte";
   import SearchIcon from "./icons/search.svelte";
   import UserIcon from "./icons/user.svelte";
@@ -26,6 +26,7 @@
   users = data.users;
   originalPageUsers = users;
   userStore.set(data.users);
+  totalUsers.set(data.total);
 
   let offset = 10;
   let pageSize = 4;
@@ -203,7 +204,7 @@
       />
     </div>
   </div>
-  <div class="badge mt-10">Total Users: <span class="text-blue-500">&nbsp;{convertToShortForm(data.total)}</span></div>
+  <div class="badge mt-10">Total Users: <span class="text-blue-500">&nbsp;{convertToShortForm($totalUsers || 0)}</span></div>
 
   <table class="mt-5 w-full">
     <thead class="">
@@ -218,9 +219,11 @@
       </tr>
     </thead>
     <tbody>
-      {#each $userStore as user}
-        <UserRow bind:checked firstName={user.firstName} lastName={user.lastName} userId={user.id} email={user.email} notes={user.notes} />
-      {/each}
+      {#if $userStore}
+        {#each $userStore as user}
+          <UserRow bind:checked firstName={user.firstName} lastName={user.lastName} userId={user.id} email={user.email} notes={user.notes} />
+        {/each}
+      {/if}
     </tbody>
   </table>
   <div class="self-center mt-10">

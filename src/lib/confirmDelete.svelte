@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { openDeleteModal, selectedUserIds, userStore } from "../stores";
+  import { openDeleteModal, selectedUserIds, totalUsers, userStore } from "../stores";
   import { onMount } from "svelte";
   import { deleteUser } from "../services/deleteUser";
   import Alert from "./alert.svelte";
@@ -37,10 +37,13 @@
         return true;
       }
     });
+    console.log("count: ", $selectedUserIds.length)
+    totalUsers.set($totalUsers - $selectedUserIds.length);
 
     selectedUserIds.set([]);
     userStore.set(removed);
     openDeleteModal.set(false);
+
     display = true;
   }
 

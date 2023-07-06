@@ -4,7 +4,7 @@
   import JsonModal from "$lib/jsonModal.svelte";
   import IsAuthenticated from "$lib/isAuthenticated.svelte";
   import EditUserSidebar from "$lib/editUserSidebar.svelte";
-  import type { PageData } from "./$types";
+  import type { PageData } from "../users/$types";
   export let data: PageData;
   let addUserButton: HTMLElement;
 </script>
