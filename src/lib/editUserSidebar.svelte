@@ -18,7 +18,7 @@
       firstName: firstName.value,
       lastName: lastName.value,
       email: email.value,
-      notes: notes.value,
+      notes: notes.value || null,
     };
     try {
       console.log(newUserData);

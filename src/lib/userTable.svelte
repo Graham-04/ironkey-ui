@@ -31,10 +31,12 @@
   let pageSize = 4;
 
   async function deleteUsers() {
-    openDeleteModal.set(true);
+    if ($selectedUserIds.length >= 1) {
+      openDeleteModal.set(true);
+    }
 
-    // If not using delete modal then use: 
-    
+    // If not using delete modal then use:
+
     // // let result = await deleteUser()
     // let result = await deleteUser({users: $selectedUserIds });
     // console.log(result)
@@ -159,9 +161,11 @@
       <UserIcon />
       Add User
     </button>
-    <button class="btn hover:shadow-md ml-2 text-[#F87272]" on:click={deleteUsers}>
-      <TrashIcon fill="#F87272" />
-    </button>
+    <div class="tooltip tooltip-error" data-tip={$selectedUserIds.length >= 1 ? null : "Select 1 or more users"}>
+      <button class="btn ml-2 {$selectedUserIds.length >= 1 ? 'opacity-1 hover:shadow-md' : 'opacity-50 remove-scale cursor-not-allowed hover:bg-base-200 hover:border-transparent'}" on:click={deleteUsers}>
+        <TrashIcon fill={$selectedUserIds.length >= 1 ? "#F87272" : "gray"} />
+      </button>
+    </div>
     <div
       class="flex items-center border border-[1.5px] border-gray-200 p-1 rounded-xl w-[80%] md:w-[19rem] lg:w-[23rem] ml-auto {shadow
         ? 'shadow-md'
@@ -235,4 +239,9 @@
   th {
     padding: 1rem;
   }
+
+  .remove-scale:active {
+    transform: none;
+  }
+
 </style>
