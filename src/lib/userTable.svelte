@@ -161,11 +161,25 @@
       <UserIcon />
       Add User
     </button>
-    <div class="tooltip tooltip-error" data-tip={$selectedUserIds.length >= 1 ? null : "Select 1 or more users"}>
-      <button class="btn ml-2 {$selectedUserIds.length >= 1 ? 'opacity-1 hover:shadow-md' : 'opacity-50 remove-scale cursor-not-allowed hover:bg-base-200 hover:border-transparent'}" on:click={deleteUsers}>
+
+    {#if $selectedUserIds.length >= 1}
+      <button
+        class="btn ml-2 {$selectedUserIds.length >= 1 ? 'opacity-1 hover:shadow-md' : 'opacity-50 remove-scale cursor-not-allowed hover:bg-base-200 hover:border-transparent'}"
+        on:click={deleteUsers}
+      >
         <TrashIcon fill={$selectedUserIds.length >= 1 ? "#F87272" : "gray"} />
       </button>
-    </div>
+    {:else}
+      <div class="tooltip tooltip-error" data-tip="Select 1 or more users">
+        <button
+          class="btn ml-2 {$selectedUserIds.length >= 1 ? 'opacity-1 hover:shadow-md' : 'opacity-50 no-animation cursor-not-allowed hover:bg-base-200 hover:border-transparent'}"
+          on:click={deleteUsers}
+        >
+          <TrashIcon fill={$selectedUserIds.length >= 1 ? "#F87272" : "gray"} />
+        </button>
+      </div>
+    {/if}
+
     <div
       class="flex items-center border border-[1.5px] border-gray-200 p-1 rounded-xl w-[80%] md:w-[19rem] lg:w-[23rem] ml-auto {shadow
         ? 'shadow-md'
@@ -239,9 +253,4 @@
   th {
     padding: 1rem;
   }
-
-  .remove-scale:active {
-    transform: none;
-  }
-
 </style>
